@@ -1,0 +1,51 @@
+[
+    {
+        "id":0,
+        "type": "admin",
+        "name": "admin",
+        "email": "admin@h.com",
+        "password": "Pass@123"
+    },
+    {
+        "id":1,
+        "type": "doctor",
+        "name": "doctor1",
+        "email": "doctor1@h.com",
+        "password": "Pass@123"
+    },
+    {
+        "id":2,
+        "type": "doctor",
+        "name": "doctor2",
+        "email": "doctor2@h.com",
+        "password": "Pass@123"
+    },
+    {
+        "id":3,
+        "type": "doctor",
+        "name": "doctor3",
+        "email": "doctor3@h.com",
+        "password": "Pass@123"
+    },
+    {
+        "id":4,
+        "type": "user",
+        "name": "user1",
+        "email": "user1@h.com",
+        "password": "Pass@123"
+    },
+    {
+        "id":5,
+        "type": "user",
+        "name": "user2",
+        "email": "user2@h.com",
+        "password": "Pass@123"
+    },
+    {
+        "id":6,
+        "type": "user",
+        "name": "user3",
+        "email": "user3@h.com",
+        "password": "Pass@123"
+    }
+]
