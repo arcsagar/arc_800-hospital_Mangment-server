@@ -99,6 +99,61 @@ app.post("/getevent", async(req, res) => {
     }
   });
 
+
+
+app.get('/getDoctors',async(req,res)=> {
+  
+  const data = await readFileSync("./jsonData/users.json");
+  const AllUserData = JSON.parse(data);
+
+  const allDoctors = [];
+
+  AllUserData.forEach((user) => {
+    if(user.type === 'doctor'){
+      allDoctors.push(user);
+    }
+  });
+
+  res.send({msg: 'all Doctor',doctors: allDoctors, status: 200});
+});
+
+app.post("/doctor/getevent", async(req, res) => {
+  console.log(req.body);
+  const {  userId } = req.body;
+  if (userId != -1) {
+    const data = await readFileSync("./jsonData/events.json");
+    const allEvents = JSON.parse(data);
+
+    const userEvent = [] ;
+    allEvents.forEach(event => {
+      if(event.userId === userId){
+        userEvent.push(event)
+    }
+    });;
+
+  console.log('userEvent',userEvent)
+    res.send({ status: 200, msg: "all event added", userEvent });
+  } else {
+    res.send({ status: 500, msg: "something went wrong" });
+  }
+});
+
+app.get("/allevents", async(req, res) => {
+
+  const data = await readFileSync("./jsonData/events.json");
+  const allEvents = JSON.parse(data);
+
+  console.log('allEvents',allEvents)
+    res.send({ status: 200, msg: "all events",events:  allEvents });
+
+});
+
+app.post('/bookAppointment', (req,res) => {
+  console.log('req.body',req.body);
+
+  res.send('user bookapointmentAPI')
+})
+
 app.listen(port, () => {
   console.log("Server started on port " + port);
 });
