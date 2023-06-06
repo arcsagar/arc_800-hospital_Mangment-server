@@ -139,21 +139,63 @@ app.post("/doctor/getevent", async(req, res) => {
 });
 
 app.get("/allevents", async(req, res) => {
-
+  const { userId } = req.query;
   const data = await readFileSync("./jsonData/events.json");
   const allEvents = JSON.parse(data);
 
+  const canBeBookEvent = [];
+
+  allEvents.forEach((event) => {
+    if(event.bookId === undefined){
+      canBeBookEvent.push(event);
+    }
+  })
+
   console.log('allEvents',allEvents)
-    res.send({ status: 200, msg: "all events",events:  allEvents });
+    res.send({ status: 200, msg: "all events",events:  canBeBookEvent });
 
 });
 
-app.post('/bookAppointment', (req,res) => {
+app.post('/bookAppointment', async(req,res) => {
   console.log('req.body',req.body);
+const {userId, bookId } = req.body;
 
-  res.send('user bookapointmentAPI')
+  const eventsData = await readFileSync("./jsonData/events.json");
+  const allEvents = JSON.parse(eventsData);
+
+  const eventId = allEvents.findIndex(event => event.userId == userId );
+  allEvents[eventId].bookId = bookId;
+  
+  await writeFileSync('./jsonData/events.json', JSON.stringify(allEvents));
+  res.send({ status: 200, msg: "appointment is booked is booked" });
+
 })
 
+app.post('/users/bookedAppointment', async(req,res)=> {
+  const { userId} = req.body;
+  const eventsData = await readFileSync("./jsonData/events.json");
+  const allEvents = JSON.parse(eventsData);
+  const usersData = await readFileSync("./jsonData/users.json");
+  const allUsers = JSON.parse(usersData);
+
+const   allAppointmetnEvent = [];
+
+allEvents.forEach(event => {
+  if(event.bookId == userId){
+    allAppointmetnEvent.push(event);
+  }
+});
+
+
+const newRes = allAppointmetnEvent.map((event) => {
+  const dcId = allUsers.findIndex(u => u.id == event.userId);
+  event.doctor = allUsers[dcId]
+  return event;
+});
+
+res.send({status: 200 ,msg:'all user booked appointment',  events:newRes})
+
+})
 app.listen(port, () => {
   console.log("Server started on port " + port);
 });
