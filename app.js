@@ -195,7 +195,43 @@ const newRes = allAppointmetnEvent.map((event) => {
 
 res.send({status: 200 ,msg:'all user booked appointment',  events:newRes})
 
-})
+});
+
+
+app.get('/admin/doctors', async (req,res) => {
+ 
+  const usersData = await readFileSync("./jsonData/users.json");
+const allUsers = JSON.parse(usersData);
+
+const doctors = [];
+
+allUsers.forEach((user) => {
+  if(user.type === 'doctor'){
+    doctors.push(user);
+  }
+});
+
+res.send({status: 200 ,msg:'all doctors list',  doctors})
+
+});
+
+app.get('/admin/users', async (req,res) => {
+ 
+  const usersData = await readFileSync("./jsonData/users.json");
+const allUsers = JSON.parse(usersData);
+
+const doctors = [];
+
+allUsers.forEach((user) => {
+  if(user.type === 'user'){
+    doctors.push(user);
+  }
+});
+
+res.send({status: 200 ,msg:'all doctors list',  doctors})
+
+});
+
 app.listen(port, () => {
   console.log("Server started on port " + port);
 });
