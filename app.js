@@ -220,15 +220,40 @@ app.get('/admin/users', async (req,res) => {
   const usersData = await readFileSync("./jsonData/users.json");
 const allUsers = JSON.parse(usersData);
 
-const doctors = [];
+const patients = [];
 
 allUsers.forEach((user) => {
   if(user.type === 'user'){
-    doctors.push(user);
+    patients.push(user);
   }
 });
 
-res.send({status: 200 ,msg:'all doctors list',  doctors})
+res.send({status: 200 ,msg:'all patients list',  patients})
+
+});
+
+app.post('/doctors/bookedAppointment', async(req,res)=> {
+  const { userId} = req.body;
+  const eventsData = await readFileSync("./jsonData/events.json");
+  const allEvents = JSON.parse(eventsData);
+  const usersData = await readFileSync("./jsonData/users.json");
+  const allUsers = JSON.parse(usersData);
+
+const   allAppointmetnEvent = [];
+
+allEvents.forEach(event => {
+  if(event.bookId !== undefined && event.userId == userId){
+    allAppointmetnEvent.push(event);
+  }
+});
+
+const newRes = allAppointmetnEvent.map((event) => {
+  const dcId = allUsers.findIndex(u => u.id == event.bookId);
+  event.user = allUsers[dcId]
+  return event;
+});
+
+res.send({status: 200 ,msg:'all doctors booked appointment',  doctorsEvents:newRes})
 
 });
 
