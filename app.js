@@ -1,10 +1,11 @@
 const express = require("express");
 const cors = require("cors");
+var jwt = require('jsonwebtoken');
 const { readFileSync, writeFileSync } = require("fs");
 const app = express();
 
 const port = 3001;
-
+const secretKey = 'secret';
 app.use(express.json());
 app.use(
   cors({
@@ -33,7 +34,7 @@ app.post("/login", async (req, res) => {
   const { email, password } = req.body;
   const data = await readFileSync("./jsonData/users.json");
   const AllUserData = JSON.parse(data);
-
+  var token = jwt.sign({ email, password }, secretKey, { expiresIn: '30min' });
   const loginUser = AllUserData.find(
     (user) => user.email === email && user.password === password
   );
@@ -44,6 +45,7 @@ app.post("/login", async (req, res) => {
       status: 200,
       msg: "user loged in successfully",
       userData: loginUser,
+      token: token
     });
   } else {
     res.send({ status: 404, msg: "User Not found" });
@@ -199,19 +201,37 @@ res.send({status: 200 ,msg:'all user booked appointment',  events:newRes})
 
 
 app.get('/admin/doctors', async (req,res) => {
- 
+   try {
+    const {authorization} = req.headers;
+
+  const authorized = authorization && authorization.split(' ')[1];
+  var decoded = jwt.verify(authorized, secretKey);
+  
+  console.log('decoded',decoded)
   const usersData = await readFileSync("./jsonData/users.json");
-const allUsers = JSON.parse(usersData);
+    const allUsers = JSON.parse(usersData);
 
-const doctors = [];
+    const adminIndex = allUsers.findIndex((user) => user.email == decoded.email);
 
-allUsers.forEach((user) => {
-  if(user.type === 'doctor'){
-    doctors.push(user);
+  if(adminIndex >= 0){
+  
+    
+  
+    const doctors = [];
+    
+    allUsers.forEach((user) => {
+      if(user.type === 'doctor'){
+        doctors.push(user);
+      }
+    });
+    
+    res.send({status: 200 ,msg:'all doctors list',  doctors})
+  }else {
+    res.send({status: 200 ,msg:'Not authorized'})
   }
-});
-
-res.send({status: 200 ,msg:'all doctors list',  doctors})
+   } catch (error) {
+      res.send({status: 400, error})
+   }
 
 });
 
